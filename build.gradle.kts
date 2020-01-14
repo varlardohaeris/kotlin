@@ -180,7 +180,8 @@ extra["versions.r8"] = "1.5.70"
 extra["versions.ktor-network"] = "1.0.1"
 
 if (!project.hasProperty("versions.kotlin-native")) {
-    extra["versions.kotlin-native"] = "1.4-dev-14579"
+    // TODO: Update to a fresh build from master!
+    extra["versions.kotlin-native"] = "1.4-dev-14455"
 }
 
 val intellijUltimateEnabled by extra(project.kotlinBuildProperties.intellijUltimateEnabled)
