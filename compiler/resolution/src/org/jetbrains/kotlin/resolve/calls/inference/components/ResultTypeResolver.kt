@@ -19,8 +19,7 @@ package org.jetbrains.kotlin.resolve.calls.inference.components
 import org.jetbrains.kotlin.resolve.calls.NewCommonSuperTypeCalculator
 import org.jetbrains.kotlin.resolve.calls.inference.components.TypeVariableDirectionCalculator.ResolveDirection
 import org.jetbrains.kotlin.resolve.calls.inference.model.*
-import org.jetbrains.kotlin.types.AbstractTypeApproximator
-import org.jetbrains.kotlin.types.TypeApproximatorConfiguration
+import org.jetbrains.kotlin.types.*
 import org.jetbrains.kotlin.types.model.*
 
 class ResultTypeResolver(
@@ -33,7 +32,11 @@ class ResultTypeResolver(
         fun isReified(variable: TypeVariableMarker): Boolean
     }
 
-    fun findResultType(c: Context, variableWithConstraints: VariableWithConstraints, direction: ResolveDirection): KotlinTypeMarker {
+    fun findResultType(
+        c: Context,
+        variableWithConstraints: VariableWithConstraints,
+        direction: ResolveDirection
+    ): KotlinTypeMarker {
         findResultTypeOrNull(c, variableWithConstraints, direction)?.let { return it }
 
         // no proper constraints
@@ -45,7 +48,7 @@ class ResultTypeResolver(
     private fun findResultTypeOrNull(
         c: Context,
         variableWithConstraints: VariableWithConstraints,
-        direction: ResolveDirection
+        direction: ResolveDirection,
     ): KotlinTypeMarker? {
         findResultIfThereIsEqualsConstraint(c, variableWithConstraints)?.let { return it }
 
@@ -61,9 +64,13 @@ class ResultTypeResolver(
     private fun Context.resultType(
         firstCandidate: KotlinTypeMarker?,
         secondCandidate: KotlinTypeMarker?,
-        variableWithConstraints: VariableWithConstraints
+        variableWithConstraints: VariableWithConstraints,
     ): KotlinTypeMarker? {
         if (firstCandidate == null || secondCandidate == null) return firstCandidate ?: secondCandidate
+
+        specialResultForIntersectionType(firstCandidate, secondCandidate)?.let { intersectionWithAlternative ->
+            return intersectionWithAlternative
+        }
 
         if (isSuitableType(firstCandidate, variableWithConstraints)) return firstCandidate
 
@@ -74,7 +81,26 @@ class ResultTypeResolver(
         }
     }
 
-    private fun Context.isSuitableType(resultType: KotlinTypeMarker, variableWithConstraints: VariableWithConstraints): Boolean {
+    private fun Context.specialResultForIntersectionType(
+        firstCandidate: KotlinTypeMarker,
+        secondCandidate: KotlinTypeMarker,
+    ): KotlinTypeMarker? {
+        if (firstCandidate.typeConstructor() is IntersectionTypeConstructor) {
+            if (!AbstractTypeChecker.isSubtypeOf(this, firstCandidate.toPublicType(), secondCandidate.toPublicType())) {
+                return createTypeWithAlternativeForIntersectionResult(firstCandidate, secondCandidate)
+            }
+        }
+
+        return null
+    }
+
+    private fun KotlinTypeMarker.toPublicType(): KotlinTypeMarker =
+        typeApproximator.approximateToSuperType(this, TypeApproximatorConfiguration.PublicDeclaration) ?: this
+
+    private fun Context.isSuitableType(
+        resultType: KotlinTypeMarker,
+        variableWithConstraints: VariableWithConstraints
+    ): Boolean {
         val filteredConstraints = variableWithConstraints.constraints.filter { isProperType(it.type) }
         for (constraint in filteredConstraints) {
             if (!checkConstraint(this, constraint.type, constraint.kind, resultType)) return false

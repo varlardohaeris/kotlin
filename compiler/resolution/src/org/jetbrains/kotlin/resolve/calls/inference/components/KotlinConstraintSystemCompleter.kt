@@ -316,8 +316,8 @@ class KotlinConstraintSystemCompleter(
         direction: TypeVariableDirectionCalculator.ResolveDirection,
         topLevelAtoms: List<ResolvedAtom>
     ) {
-        val resultType = resultTypeResolver.findResultType(c, variableWithConstraints, direction)
         val resolvedAtom = findResolvedAtomBy(variableWithConstraints.typeVariable, topLevelAtoms) ?: topLevelAtoms.firstOrNull()
+        val resultType = resultTypeResolver.findResultType(c, variableWithConstraints, direction)
         c.fixVariable(variableWithConstraints.typeVariable, resultType, resolvedAtom)
     }
 
