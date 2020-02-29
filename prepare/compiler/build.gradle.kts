@@ -1,6 +1,5 @@
 @file:Suppress("HasPlatformType")
 
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import java.util.regex.Pattern.quote
 
 description = "Kotlin Compiler"
@@ -16,6 +15,7 @@ val JDK_18: String by rootProject.extra
 val fatJarContents by configurations.creating
 val fatJarContentsStripMetadata by configurations.creating
 val fatJarContentsStripServices by configurations.creating
+val compilerVersion by configurations.creating
 
 // JPS build assumes fat jar is built from embedded configuration,
 // but we can't use it in gradle build since slightly more complex processing is required like stripping metadata & services from some jars
@@ -25,6 +25,7 @@ if (kotlinBuildProperties.isInJpsBuildIdeaSync) {
         extendsFrom(fatJarContents)
         extendsFrom(fatJarContentsStripMetadata)
         extendsFrom(fatJarContentsStripServices)
+        extendsFrom(compilerVersion)
     }
 }
 
@@ -133,9 +134,13 @@ dependencies {
 
     proguardLibraries(project(":kotlin-annotations-jvm"))
 
-    compilerModules.forEach {
-        fatJarContents(project(it)) { isTransitive = false }
-    }
+    compilerVersion(project(":compiler:compiler.version"))
+    proguardLibraries(project(":compiler:compiler.version"))
+    compilerModules
+        .filter { it != ":compiler:compiler.version" } // Version will be added directly to the final jar excluding proguard and relocation
+        .forEach {
+            fatJarContents(project(it)) { isTransitive = false }
+        }
 
     libraries(intellijDep()) { includeIntellijCoreJarDependencies(project) { it.startsWith("trove4j") } }
     libraries(commonDep("io.ktor", "ktor-network"))
@@ -284,9 +289,14 @@ val distDir: String by rootProject.extra
 
 val jar = runtimeJar {
     dependsOn(pack)
+    dependsOn(compilerVersion)
 
     from {
         zipTree(pack.get().singleOutputFile())
+    }
+
+    from {
+        compilerVersion.map(::zipTree)
     }
 
     manifest.attributes["Class-Path"] = compilerManifestClassPath
