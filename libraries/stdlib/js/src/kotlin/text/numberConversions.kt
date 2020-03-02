@@ -5,18 +5,11 @@
 
 package kotlin.text
 
-import kotlin.internal.LowPriorityInOverloadResolution
-
-
-/**
- * Returns `true` if the contents of this string is equal to the word "true", ignoring case, and `false` otherwise.
- */
-@LowPriorityInOverloadResolution
-public actual fun String.toBoolean(): Boolean = toLowerCase() == "true"
 
 /**
  * Returns `true` if this string is not `null` and it's contents is equal to the word "true", ignoring case, and `false` otherwise.
  */
+ @SinceKotlin("1.4")
 public actual fun String?.toBoolean(): Boolean = this?.toLowerCase() == "true"
 
 /**

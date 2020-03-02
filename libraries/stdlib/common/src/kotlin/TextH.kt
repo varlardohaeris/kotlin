@@ -287,12 +287,14 @@ public expect val String.Companion.CASE_INSENSITIVE_ORDER: Comparator<String>
  * Returns `true` if the contents of this string is equal to the word "true", ignoring case, and `false` otherwise.
  */
 @LowPriorityInOverloadResolution
-expect fun String.toBoolean(): Boolean
+@kotlin.internal.InlineOnly
+public inline fun String.toBoolean(): Boolean = this.toBoolean()
 
 /**
  * Returns `true` if this string is not `null` and it's contents is equal to the word "true", ignoring case, and `false` otherwise.
  */
-expect fun String?.toBoolean(): Boolean
+ @SinceKotlin("1.4")
+public expect fun String?.toBoolean(): Boolean
 
 /**
  * Parses the string as a signed [Byte] number and returns the result.
