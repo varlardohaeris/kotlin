@@ -1,0 +1,16 @@
+log4j:WARN No appenders could be found for logger (#com.intellij.psi.impl.source.PsiFileImpl).
+log4j:WARN Please initialize the log4j system properly.
+log4j:WARN See http://logging.apache.org/log4j/1.2/faq.html#noconfig for more info.
+compiler/testData/cli/js/reifiedIntersectionType.kt:2:9: warning: variable 'flow' is never used
+    val flow = combine(
+        ^
+compiler/testData/cli/js/reifiedIntersectionType.kt:11:12: warning: parameter 'flows' is never used
+    vararg flows: Flow<T>,
+           ^
+compiler/testData/cli/js/reifiedIntersectionType.kt:12:17: warning: parameter 'transform' is never used
+    crossinline transform: suspend (Array<T>) -> R
+                ^
+compiler/testData/cli/js/reifiedIntersectionType.kt:15:16: warning: parameter 'value' is never used
+fun <T> flowOf(value: T): Flow<T> = TODO()
+               ^
+OK

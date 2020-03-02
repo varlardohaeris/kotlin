@@ -188,6 +188,13 @@ public class K2JSCompiler extends CLICompiler<K2JSCompilerArguments> {
 
         ExitCode exitCode = OK;
 
+        if (!arguments.getNewInference()) {
+            CommonConfigurationKeysKt.setLanguageVersionSettings(
+                    configuration,
+                    new JSLanguageVersionSettings(CommonConfigurationKeysKt.getLanguageVersionSettings(configuration))
+            );
+        }
+
         if (K2JSCompilerArgumentsKt.isIrBackendEnabled(arguments)) {
             exitCode = getIrCompiler().doExecute(arguments, configuration.copy(), rootDisposable, paths);
         }
