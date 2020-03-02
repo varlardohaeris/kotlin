@@ -3,16 +3,19 @@
 // SKIP_TXT
 
 /*
- * KOTLIN DIAGNOSTICS SPEC TEST (POSITIVE)
+ * KOTLIN DIAGNOSTICS SPEC TEST (NEGATIVE)
  *
  * SPEC VERSION: 0.1-278
- * PLACE: overload-resolution, building-the-overload-candidate-set-ocs, call-without-an-explicit-receiver -> paragraph 5 -> sentence 4
+ * PLACE: overload-resolution, building-the-overload-candidate-set-ocs, call-without-an-explicit-receiver -> paragraph 5 -> sentence 2
  * RELEVANT PLACES: overload-resolution, building-the-overload-candidate-set-ocs, call-without-an-explicit-receiver -> paragraph 4 -> sentence 1
+ * overload-resolution, building-the-overload-candidate-set-ocs, call-with-an-explicit-receiver -> paragraph 6 -> sentence 4
  * overload-resolution, building-the-overload-candidate-set-ocs, call-without-an-explicit-receiver -> paragraph 8 -> sentence 1
  * overload-resolution, building-the-overload-candidate-set-ocs, call-without-an-explicit-receiver -> paragraph 6 -> sentence 1
- * NUMBER: 1
- * DESCRIPTION: Top-level non-extension functions: Callables explicitly imported into the current file
+ * NUMBER: 4
+ * DESCRIPTION: The overload candidate sets for each pair of implicit receivers: declared in the package scope extension callables
  */
+
+
 
 // FILE: TestCase.kt
 // TESTCASE NUMBER: 1
@@ -20,14 +23,22 @@ package testsCase1
 import libPackageCase1.*
 import libPackageCase1Explicit.emptyArray
 
-fun case1() {
-    <!DEBUG_INFO_AS_CALL("fqName: libPackageCase1Explicit.emptyArray; typeCall: function")!>emptyArray<Int>()<!>
+<!CONFLICTING_OVERLOADS!>fun <T> Case1.emptyArray(): Array<T><!> = TODO()
+
+class Case1(){
+
+    fun case1() {
+        <!DEBUG_INFO_AS_CALL("fqName: fqName is unknown; typeCall: typeCall is unknown")!><!OVERLOAD_RESOLUTION_AMBIGUITY!>emptyArray<!><Int>()<!>
+    }
 }
+
 
 // FILE: Lib.kt
 package libPackageCase1
+import testsCase1.*
 
 public fun <T> emptyArray(): Array<T> = TODO()
+fun <T> Case1.emptyArray(): Array<T> = TODO()
 
 // FILE: Lib.kt
 package libPackageCase1Explicit
@@ -35,9 +46,13 @@ package libPackageCase1Explicit
 public fun <T> emptyArray(): Array<T> = TODO()
 
 // FILE: LibtestsPack.kt
+// TESTCASE NUMBER: 1
 package testsCase1
+<!CONFLICTING_OVERLOADS!>fun <T> Case1.emptyArray(): Array<T><!> = TODO()
 
 public fun <T> emptyArray(): Array<T> = TODO()
+
+
 
 
 // FILE: TestCase.kt
@@ -46,61 +61,40 @@ package testsCase2
 import libPackageCase2.*
 import libPackageCase2Explicit.emptyArray
 
-fun case2() {
-    <!DEBUG_INFO_AS_CALL("fqName: libPackageCase2Explicit.emptyArray; typeCall: function")!>emptyArray<Int>()<!>
+<!CONFLICTING_OVERLOADS!>fun <T> Case2.emptyArray(): Array<T><!> = TODO()
+
+class Case2(){
+
+    fun case1() {
+        <!DEBUG_INFO_AS_CALL("fqName: fqName is unknown; typeCall: typeCall is unknown")!><!OVERLOAD_RESOLUTION_AMBIGUITY!>emptyArray<!><Int>()<!>
+    }
 }
+
+val Case2.emptyArray: A
+    get() = A()
+
 class A {
-    operator fun <T>invoke(): T = TODO()
+    operator fun invoke(): Unit = TODO()
 }
+
 // FILE: Lib.kt
 package libPackageCase2
+import testsCase2.*
 
 public fun <T> emptyArray(): Array<T> = TODO()
+fun <T> Case2.emptyArray(): Array<T> = TODO()
 
 // FILE: Lib.kt
 package libPackageCase2Explicit
-import testsCase2.*
-
-val emptyArray: A
-    get() = A()
 
 public fun <T> emptyArray(): Array<T> = TODO()
 
 // FILE: LibtestsPack.kt
+// TESTCASE NUMBER: 2
 package testsCase2
+<!CONFLICTING_OVERLOADS!>fun <T> Case2.emptyArray(): Array<T><!> = TODO()
 
 public fun <T> emptyArray(): Array<T> = TODO()
 
 
-
-// FILE: TestCase.kt
-// TESTCASE NUMBER: 3
-package testsCase3
-import libPackageCase3.*
-import libPackageCase3Explicit.emptyArray
-
-fun case3() {
-    <!DEBUG_INFO_AS_CALL("fqName: testsCase3.A.invoke; typeCall: variable&invoke")!>emptyArray<Int>()<!>
-}
-class A {
-    operator fun <T>invoke(): T = TODO()
-}
-// FILE: Lib.kt
-package libPackageCase3
-
-public fun <T> emptyArray(): Array<T> = TODO()
-
-// FILE: Lib.kt
-package libPackageCase3Explicit
-import testsCase3.*
-
-val emptyArray: A
-    get() = A()
-
-private fun <T> emptyArray(): Array<T> = TODO()
-
-// FILE: LibtestsPack.kt
-package testsCase3
-
-public fun <T> emptyArray(): Array<T> = TODO()
 

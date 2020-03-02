@@ -3667,12 +3667,65 @@ public class DiagnosticsTestSpecGenerated extends AbstractDiagnosticsTestSpec {
                             KotlinTestUtils.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("compiler/tests-spec/testData/diagnostics/linked/overload-resolution/building-the-overload-candidate-set-ocs/call-without-an-explicit-receiver/p-5"), Pattern.compile("^(.+)\\.kt$"), null, true);
                         }
 
+                        @TestMetadata("compiler/tests-spec/testData/diagnostics/linked/overload-resolution/building-the-overload-candidate-set-ocs/call-without-an-explicit-receiver/p-5/neg")
+                        @TestDataPath("$PROJECT_ROOT")
+                        @RunWith(JUnit3RunnerWithInners.class)
+                        public static class Neg extends AbstractDiagnosticsTestSpec {
+                            private void runTest(String testDataFilePath) throws Exception {
+                                KotlinTestUtils.runTest(this::doTest, this, testDataFilePath);
+                            }
+
+                            @TestMetadata("2.3.kt")
+                            public void test2_3() throws Exception {
+                                runTest("compiler/tests-spec/testData/diagnostics/linked/overload-resolution/building-the-overload-candidate-set-ocs/call-without-an-explicit-receiver/p-5/neg/2.3.kt");
+                            }
+
+                            @TestMetadata("2.4.kt")
+                            public void test2_4() throws Exception {
+                                runTest("compiler/tests-spec/testData/diagnostics/linked/overload-resolution/building-the-overload-candidate-set-ocs/call-without-an-explicit-receiver/p-5/neg/2.4.kt");
+                            }
+
+                            @TestMetadata("2.5.kt")
+                            public void test2_5() throws Exception {
+                                runTest("compiler/tests-spec/testData/diagnostics/linked/overload-resolution/building-the-overload-candidate-set-ocs/call-without-an-explicit-receiver/p-5/neg/2.5.kt");
+                            }
+
+                            public void testAllFilesPresentInNeg() throws Exception {
+                                KotlinTestUtils.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("compiler/tests-spec/testData/diagnostics/linked/overload-resolution/building-the-overload-candidate-set-ocs/call-without-an-explicit-receiver/p-5/neg"), Pattern.compile("^(.+)\\.kt$"), null, true);
+                            }
+                        }
+
                         @TestMetadata("compiler/tests-spec/testData/diagnostics/linked/overload-resolution/building-the-overload-candidate-set-ocs/call-without-an-explicit-receiver/p-5/pos")
                         @TestDataPath("$PROJECT_ROOT")
                         @RunWith(JUnit3RunnerWithInners.class)
                         public static class Pos extends AbstractDiagnosticsTestSpec {
                             private void runTest(String testDataFilePath) throws Exception {
                                 KotlinTestUtils.runTest(this::doTest, this, testDataFilePath);
+                            }
+
+                            @TestMetadata("2.1.kt")
+                            public void test2_1() throws Exception {
+                                runTest("compiler/tests-spec/testData/diagnostics/linked/overload-resolution/building-the-overload-candidate-set-ocs/call-without-an-explicit-receiver/p-5/pos/2.1.kt");
+                            }
+
+                            @TestMetadata("2.2.kt")
+                            public void test2_2() throws Exception {
+                                runTest("compiler/tests-spec/testData/diagnostics/linked/overload-resolution/building-the-overload-candidate-set-ocs/call-without-an-explicit-receiver/p-5/pos/2.2.kt");
+                            }
+
+                            @TestMetadata("2.3.kt")
+                            public void test2_3() throws Exception {
+                                runTest("compiler/tests-spec/testData/diagnostics/linked/overload-resolution/building-the-overload-candidate-set-ocs/call-without-an-explicit-receiver/p-5/pos/2.3.kt");
+                            }
+
+                            @TestMetadata("2.4.kt")
+                            public void test2_4() throws Exception {
+                                runTest("compiler/tests-spec/testData/diagnostics/linked/overload-resolution/building-the-overload-candidate-set-ocs/call-without-an-explicit-receiver/p-5/pos/2.4.kt");
+                            }
+
+                            @TestMetadata("2.5.kt")
+                            public void test2_5() throws Exception {
+                                runTest("compiler/tests-spec/testData/diagnostics/linked/overload-resolution/building-the-overload-candidate-set-ocs/call-without-an-explicit-receiver/p-5/pos/2.5.kt");
                             }
 
                             @TestMetadata("4.1.kt")

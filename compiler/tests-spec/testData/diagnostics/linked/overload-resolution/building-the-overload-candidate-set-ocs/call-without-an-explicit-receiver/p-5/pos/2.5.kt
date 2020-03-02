@@ -6,12 +6,13 @@
  * KOTLIN DIAGNOSTICS SPEC TEST (POSITIVE)
  *
  * SPEC VERSION: 0.1-278
- * PLACE: overload-resolution, building-the-overload-candidate-set-ocs, call-without-an-explicit-receiver -> paragraph 5 -> sentence 4
+ * PLACE: overload-resolution, building-the-overload-candidate-set-ocs, call-without-an-explicit-receiver -> paragraph 5 -> sentence 2
  * RELEVANT PLACES: overload-resolution, building-the-overload-candidate-set-ocs, call-without-an-explicit-receiver -> paragraph 4 -> sentence 1
  * overload-resolution, building-the-overload-candidate-set-ocs, call-without-an-explicit-receiver -> paragraph 8 -> sentence 1
+ * overload-resolution, building-the-overload-candidate-set-ocs, call-with-an-explicit-receiver -> paragraph 6 -> sentence 5
  * overload-resolution, building-the-overload-candidate-set-ocs, call-without-an-explicit-receiver -> paragraph 6 -> sentence 1
- * NUMBER: 1
- * DESCRIPTION: Top-level non-extension functions: Callables explicitly imported into the current file
+ * NUMBER: 5
+ * DESCRIPTION: The overload candidate sets for each pair of implicit receivers: Implicitly imported extension callables
  */
 
 // FILE: TestCase.kt
@@ -20,14 +21,19 @@ package testsCase1
 import libPackageCase1.*
 import libPackageCase1Explicit.emptyArray
 
-fun case1() {
-    <!DEBUG_INFO_AS_CALL("fqName: libPackageCase1Explicit.emptyArray; typeCall: function")!>emptyArray<Int>()<!>
+class Case1(){
+
+    fun case() {
+        <!DEBUG_INFO_AS_CALL("fqName: libPackageCase1.emptyArray; typeCall: extension function")!>emptyArray<Int>()<!>
+    }
 }
 
 // FILE: Lib.kt
 package libPackageCase1
+import testsCase1.*
 
 public fun <T> emptyArray(): Array<T> = TODO()
+fun <T> Case1.emptyArray(): Array<T> = TODO()
 
 // FILE: Lib.kt
 package libPackageCase1Explicit
@@ -46,23 +52,29 @@ package testsCase2
 import libPackageCase2.*
 import libPackageCase2Explicit.emptyArray
 
-fun case2() {
-    <!DEBUG_INFO_AS_CALL("fqName: libPackageCase2Explicit.emptyArray; typeCall: function")!>emptyArray<Int>()<!>
+class Case2(){
+
+    fun case() {
+        <!DEBUG_INFO_AS_CALL("fqName: libPackageCase2.emptyArray; typeCall: extension function")!>emptyArray<Int>()<!>
+    }
 }
 class A {
     operator fun <T>invoke(): T = TODO()
 }
+
+
 // FILE: Lib.kt
 package libPackageCase2
+import testsCase2.*
+
+val Case2.emptyArray: A
+    get() = A()
 
 public fun <T> emptyArray(): Array<T> = TODO()
+fun <T> Case2.emptyArray(): Array<T> = TODO()
 
 // FILE: Lib.kt
 package libPackageCase2Explicit
-import testsCase2.*
-
-val emptyArray: A
-    get() = A()
 
 public fun <T> emptyArray(): Array<T> = TODO()
 
@@ -72,32 +84,37 @@ package testsCase2
 public fun <T> emptyArray(): Array<T> = TODO()
 
 
-
 // FILE: TestCase.kt
 // TESTCASE NUMBER: 3
 package testsCase3
 import libPackageCase3.*
 import libPackageCase3Explicit.emptyArray
 
-fun case3() {
-    <!DEBUG_INFO_AS_CALL("fqName: testsCase3.A.invoke; typeCall: variable&invoke")!>emptyArray<Int>()<!>
+class Case3(){
+
+    fun case() {
+        <!DEBUG_INFO_AS_CALL("fqName: testsCase3.A.invoke; typeCall: variable&invoke")!>emptyArray<Int>()<!>
+    }
 }
 class A {
     operator fun <T>invoke(): T = TODO()
 }
+
+
 // FILE: Lib.kt
 package libPackageCase3
+import testsCase3.*
 
-public fun <T> emptyArray(): Array<T> = TODO()
+val Case3.emptyArray: A
+    get() = A()
+
+fun <T> emptyArray(): Array<T> = TODO()
+private fun <T> Case3.emptyArray(): Array<T> = TODO()
 
 // FILE: Lib.kt
 package libPackageCase3Explicit
-import testsCase3.*
 
-val emptyArray: A
-    get() = A()
-
-private fun <T> emptyArray(): Array<T> = TODO()
+public fun <T> emptyArray(): Array<T> = TODO()
 
 // FILE: LibtestsPack.kt
 package testsCase3
