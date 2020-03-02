@@ -21,12 +21,15 @@ import org.jetbrains.kotlin.types.*
 import java.util.*
 import kotlin.collections.LinkedHashSet
 
-fun intersectWrappedTypes(types: Collection<KotlinType>) = intersectTypes(types.map { it.unwrap() })
+fun intersectWrappedTypes(
+    types: Collection<KotlinType>,
+    alternativeWithoutSmartCasts: KotlinType? = null,
+) = intersectTypes(types.map { it.unwrap() }, alternativeWithoutSmartCasts)
 
 
 fun intersectTypes(types: List<SimpleType>) = intersectTypes(types as List<UnwrappedType>) as SimpleType
 
-fun intersectTypes(types: List<UnwrappedType>): UnwrappedType {
+fun intersectTypes(types: List<UnwrappedType>, alternativeWithoutSmartCasts: KotlinType? = null): UnwrappedType {
     when (types.size) {
         0 -> error("Expected some types")
         1 -> return types.single()
@@ -50,7 +53,7 @@ fun intersectTypes(types: List<UnwrappedType>): UnwrappedType {
     }
 
     if (!hasFlexibleTypes) {
-        return TypeIntersector.intersectTypes(lowerBounds)
+        return TypeIntersector.intersectTypes(lowerBounds, alternativeWithoutSmartCasts)
     }
 
     val upperBounds = types.map { it.upperIfFlexible() }
@@ -61,13 +64,16 @@ fun intersectTypes(types: List<UnwrappedType>): UnwrappedType {
      *
      *  Note: when we construct intersection type of dynamic(or Raw type) & other type, we can get non-dynamic type.  // todo discuss
      */
-    return KotlinTypeFactory.flexibleType(TypeIntersector.intersectTypes(lowerBounds), TypeIntersector.intersectTypes(upperBounds))
+    return KotlinTypeFactory.flexibleType(
+        TypeIntersector.intersectTypes(lowerBounds, alternativeWithoutSmartCasts),
+        TypeIntersector.intersectTypes(upperBounds, alternativeWithoutSmartCasts)
+    )
 }
 
 
 object TypeIntersector {
 
-    internal fun intersectTypes(types: List<SimpleType>): SimpleType {
+    internal fun intersectTypes(types: List<SimpleType>, alternativeWithoutSmartCasts: KotlinType?): SimpleType {
         assert(types.size > 1) {
             "Size should be at least 2, but it is ${types.size}"
         }
@@ -97,11 +103,11 @@ object TypeIntersector {
             if (resultNullability == ResultNullability.NOT_NULL) it.makeSimpleTypeDefinitelyNotNullOrNotNull() else it
         }
 
-        return intersectTypesWithoutIntersectionType(correctNullability)
+        return intersectTypesWithoutIntersectionType(correctNullability, alternativeWithoutSmartCasts)
     }
 
     // nullability here is correct
-    private fun intersectTypesWithoutIntersectionType(inputTypes: Set<SimpleType>): SimpleType {
+    private fun intersectTypesWithoutIntersectionType(inputTypes: Set<SimpleType>, alternativeWithoutSmartCasts: KotlinType?): SimpleType {
         if (inputTypes.size == 1) return inputTypes.single()
 
         // Any and Nothing should leave
@@ -118,7 +124,7 @@ object TypeIntersector {
 
         if (filteredSuperAndEqualTypes.size < 2) return filteredSuperAndEqualTypes.single()
 
-        return IntersectionTypeConstructor(inputTypes).createType()
+        return IntersectionTypeConstructor(inputTypes).setTypeWithoutSmartCast(alternativeWithoutSmartCasts).createType()
     }
 
     private fun filterTypes(

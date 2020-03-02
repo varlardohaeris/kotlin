@@ -28,12 +28,15 @@ import java.util.*
 
 class IntersectionTypeConstructor(typesToIntersect: Collection<KotlinType>) : TypeConstructor {
     private var alternative: KotlinType? = null
+    private var withoutSmartCast: KotlinType? = null
 
     private constructor(
         typesToIntersect: Collection<KotlinType>,
         alternative: KotlinType?,
+        withoutSmartCast: KotlinType?,
     ) : this(typesToIntersect) {
         this.alternative = alternative
+        this.withoutSmartCast = withoutSmartCast
     }
 
     init {
@@ -87,10 +90,15 @@ class IntersectionTypeConstructor(typesToIntersect: Collection<KotlinType>) : Ty
         IntersectionTypeConstructor(intersectedTypes.map { it.refine(kotlinTypeRefiner) })
 
     fun setAlternative(alternative: KotlinType?): IntersectionTypeConstructor {
-        return IntersectionTypeConstructor(intersectedTypes, alternative)
+        return IntersectionTypeConstructor(intersectedTypes, alternative, withoutSmartCast)
+    }
+
+    fun setTypeWithoutSmartCast(withoutSmartCast: KotlinType?): IntersectionTypeConstructor {
+        return IntersectionTypeConstructor(intersectedTypes, alternative, withoutSmartCast)
     }
 
     fun getAlternativeType(): KotlinType? = alternative
+    fun getTypeWithoutSmartCast(): KotlinType? = withoutSmartCast
 }
 
 inline fun IntersectionTypeConstructor.transformComponents(

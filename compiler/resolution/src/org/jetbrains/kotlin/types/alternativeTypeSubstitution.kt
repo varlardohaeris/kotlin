@@ -19,6 +19,10 @@ private fun doReplace(type: UnwrappedType): UnwrappedType {
 
     val constructor = type.constructor
     if (constructor is IntersectionTypeConstructor) {
+        constructor.getTypeWithoutSmartCast()?.let { withoutLastSmartCast ->
+            return doReplace(withoutLastSmartCast.unwrap())
+                .inheritEnhancement(type)
+        }
         constructor.getAlternativeType()?.let { alternative ->
             return doReplace(alternative.unwrap())
                 .inheritEnhancement(type)

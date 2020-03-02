@@ -305,6 +305,7 @@ internal fun createSimplePSICallArgument(
     contextForArgument.languageVersionSettings,
     contextForArgument.dataFlowValueFactory,
     contextForArgument.call,
+    isLambdaReturnArgument = false,
 )
 
 internal fun createSimplePSICallArgument(
@@ -316,7 +317,8 @@ internal fun createSimplePSICallArgument(
     typeInfoForArgument: KotlinTypeInfo,
     languageVersionSettings: LanguageVersionSettings,
     dataFlowValueFactory: DataFlowValueFactory,
-    call: Call
+    call: Call,
+    isLambdaReturnArgument: Boolean,
 ): SimplePSIKotlinCallArgument? {
 
     val ktExpression = KtPsiUtil.getLastElementDeparenthesized(valueArgument.getArgumentExpression(), statementFilter) ?: return null
@@ -339,7 +341,8 @@ internal fun createSimplePSICallArgument(
                 if (useDataFlowInfoBeforeArgument) dataFlowInfoBeforeThisArgument else typeInfoForArgument.dataFlowInfo,
                 expressionReceiver,
                 languageVersionSettings,
-                dataFlowValueFactory
+                dataFlowValueFactory,
+                isLambdaReturnArgument
             )
         }
 

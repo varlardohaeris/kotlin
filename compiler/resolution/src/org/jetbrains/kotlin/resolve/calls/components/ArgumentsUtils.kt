@@ -48,7 +48,9 @@ internal val ReceiverValueWithSmartCastInfo.unstableType: UnwrappedType?
 val ReceiverValueWithSmartCastInfo.stableType: UnwrappedType
     get() {
         if (!isStable || possibleTypes.isEmpty()) return receiverValue.type.unwrap()
-        return intersectWrappedTypes(possibleTypes + receiverValue.type)
+        return if (isLambdaArgumentReceiver)
+            intersectWrappedTypes(possibleTypes + receiverValue.type, receiverValue.type)
+        else intersectWrappedTypes(possibleTypes + receiverValue.type)
     }
 
 internal fun KotlinCallArgument.getExpectedType(parameter: ParameterDescriptor, languageVersionSettings: LanguageVersionSettings) =
