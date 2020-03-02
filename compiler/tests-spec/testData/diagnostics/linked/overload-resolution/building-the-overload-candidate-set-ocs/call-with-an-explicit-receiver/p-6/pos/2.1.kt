@@ -13,6 +13,8 @@
  * overload-resolution, building-the-overload-candidate-set-ocs, call-with-an-explicit-receiver -> paragraph 2 -> sentence 1
  * overload-resolution, callables-and-invoke-convention -> paragraph 7 -> sentence 1
  * overload-resolution, callables-and-invoke-convention -> paragraph 7 -> sentence 2
+ * overload-resolution, receivers -> paragraph 7 -> sentence 2
+ * overload-resolution, receivers -> paragraph 7 -> sentence 3
  * NUMBER: 1
  * DESCRIPTION: The sets of local extension callables
  */

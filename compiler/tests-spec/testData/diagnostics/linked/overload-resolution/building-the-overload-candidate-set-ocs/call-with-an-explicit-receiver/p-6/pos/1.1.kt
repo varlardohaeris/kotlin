@@ -10,6 +10,8 @@
  * RELEVANT PLACES: overload-resolution, c-level-partition -> paragraph 1 -> sentence 1 
  * overload-resolution, building-the-overload-candidate-set-ocs, call-with-an-explicit-receiver -> paragraph 3 -> sentence 1
  * overload-resolution, building-the-overload-candidate-set-ocs, call-with-an-explicit-receiver -> paragraph 2 -> sentence 1
+ * overload-resolution, receivers -> paragraph 7 -> sentence 2
+ * overload-resolution, receivers -> paragraph 7 -> sentence 3
  * NUMBER: 1
  * DESCRIPTION: sets of non-extension member callables only
  */

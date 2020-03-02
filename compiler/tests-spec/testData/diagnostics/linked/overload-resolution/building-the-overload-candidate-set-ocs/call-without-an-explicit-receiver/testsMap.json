@@ -1,0 +1,38 @@
+{
+  "5": {
+    "pos": {
+      "4": [
+        {
+          "specVersion": "0.1-278",
+          "casesNumber": 1,
+          "description": "Top-level non-extension functions: Callables explicitly imported into the current file",
+          "unexpectedBehaviour": false
+        }
+      ],
+      "5": [
+        {
+          "specVersion": "0.1-278",
+          "casesNumber": 1,
+          "description": "Top-level non-extension functions: Callables declared in the same package",
+          "unexpectedBehaviour": false
+        }
+      ],
+      "6": [
+        {
+          "specVersion": "0.1-278",
+          "casesNumber": 1,
+          "description": "Top-level non-extension functions: Callables star-imported into the current file;",
+          "unexpectedBehaviour": false
+        }
+      ],
+      "7": [
+        {
+          "specVersion": "0.1-278",
+          "casesNumber": 1,
+          "description": "Top-level non-extension functions: Implicitly imported callables",
+          "unexpectedBehaviour": false
+        }
+      ]
+    }
+  }
+}
