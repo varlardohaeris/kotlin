@@ -20,9 +20,7 @@ import org.jetbrains.kotlin.fir.declarations.builder.FirFunctionBuilder
 import org.jetbrains.kotlin.fir.declarations.impl.FirAnonymousFunctionImpl
 import org.jetbrains.kotlin.fir.expressions.FirAnnotationCall
 import org.jetbrains.kotlin.fir.expressions.FirBlock
-import org.jetbrains.kotlin.fir.expressions.FirLocalContext
 import org.jetbrains.kotlin.fir.expressions.builder.FirExpressionBuilder
-import org.jetbrains.kotlin.fir.expressions.impl.FirEmptyLocalContext
 import org.jetbrains.kotlin.fir.references.FirControlFlowGraphReference
 import org.jetbrains.kotlin.fir.references.impl.FirEmptyControlFlowGraphReference
 import org.jetbrains.kotlin.fir.symbols.impl.FirAnonymousFunctionSymbol
@@ -51,7 +49,6 @@ class FirAnonymousFunctionBuilder : FirFunctionBuilder, FirAnnotationContainerBu
     var label: FirLabel? = null
     var invocationKind: InvocationKind? = null
     var isLambda: Boolean by kotlin.properties.Delegates.notNull<Boolean>()
-    var localContext: FirLocalContext = FirEmptyLocalContext
 
     override fun build(): FirAnonymousFunction {
         return FirAnonymousFunctionImpl(
@@ -69,7 +66,6 @@ class FirAnonymousFunctionBuilder : FirFunctionBuilder, FirAnnotationContainerBu
             label,
             invocationKind,
             isLambda,
-            localContext,
         )
     }
 

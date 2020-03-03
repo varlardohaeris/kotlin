@@ -119,7 +119,6 @@ import org.jetbrains.kotlin.fir.types.FirResolvedFunctionTypeRef
 import org.jetbrains.kotlin.fir.types.FirImplicitTypeRef
 import org.jetbrains.kotlin.fir.types.FirComposedSuperTypeRef
 import org.jetbrains.kotlin.fir.contracts.FirContractDescription
-import org.jetbrains.kotlin.fir.expressions.FirLocalContext
 
 /*
  * This file was generated automatically
@@ -581,10 +580,6 @@ abstract class FirVisitorVoid : FirVisitor<Unit, Nothing?>() {
         visitElement(contractDescription)
     }
 
-    open fun visitLocalContext(localContext: FirLocalContext) {
-        visitElement(localContext)
-    }
-
     final override fun visitElement(element: FirElement, data: Nothing?) {
         visitElement(element)
     }
@@ -1039,10 +1034,6 @@ abstract class FirVisitorVoid : FirVisitor<Unit, Nothing?>() {
 
     final override fun visitContractDescription(contractDescription: FirContractDescription, data: Nothing?) {
         visitContractDescription(contractDescription)
-    }
-
-    final override fun visitLocalContext(localContext: FirLocalContext, data: Nothing?) {
-        visitLocalContext(localContext)
     }
 
 }

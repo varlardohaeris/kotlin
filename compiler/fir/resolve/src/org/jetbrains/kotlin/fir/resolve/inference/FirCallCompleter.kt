@@ -12,7 +12,6 @@ import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
 import org.jetbrains.kotlin.fir.expressions.FirResolvable
 import org.jetbrains.kotlin.fir.expressions.FirStatement
 import org.jetbrains.kotlin.fir.resolve.BodyResolveComponents
-import org.jetbrains.kotlin.fir.resolve.FirLocalContextImpl
 import org.jetbrains.kotlin.fir.resolve.ResolutionMode
 import org.jetbrains.kotlin.fir.resolve.calls.candidate
 import org.jetbrains.kotlin.fir.resolve.substitution.ConeSubstitutor
@@ -186,10 +185,11 @@ class FirCallCompleter(
             lambdaArgument.replaceValueParameters(lambdaArgument.valueParameters + listOfNotNull(itParam))
             lambdaArgument.replaceReturnTypeRef(expectedReturnTypeRef ?: noExpectedType)
 
-            val localContext = lambdaArgument.localContext as FirLocalContextImpl
+            val localContext = localContextForAnonymousFunctions.getValue(lambdaArgument.symbol)
             transformer.components.withLocalContext(localContext) {
                 lambdaArgument.transformSingle(transformer, ResolutionMode.LambdaResolution(expectedReturnTypeRef))
             }
+            dropContextForAnonymousFunction(lambdaArgument)
 
             val returnArguments = dataFlowAnalyzer.returnExpressionsOfAnonymousFunction(lambdaArgument)
 

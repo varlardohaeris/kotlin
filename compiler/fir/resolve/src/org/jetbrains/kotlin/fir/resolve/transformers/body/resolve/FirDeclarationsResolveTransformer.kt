@@ -477,7 +477,7 @@ class FirDeclarationsResolveTransformer(transformer: FirBodyResolveTransformer) 
             anonymousFunction.transformReturnTypeRef(transformer, ResolutionMode.ContextIndependent)
             anonymousFunction.transformReceiverTypeRef(transformer, ResolutionMode.ContextIndependent)
             anonymousFunction.valueParameters.forEach { it.transformReturnTypeRef(transformer, ResolutionMode.ContextIndependent) }
-            anonymousFunction.replaceLocalContext(components.createLocalContextSnapshot())
+            components.saveContextForAnonymousFunction(anonymousFunction)
         }
         return when (data) {
             ResolutionMode.ContextDependent -> {

@@ -15,7 +15,6 @@ import org.jetbrains.kotlin.fir.declarations.FirTypeParameter
 import org.jetbrains.kotlin.fir.declarations.FirValueParameter
 import org.jetbrains.kotlin.fir.expressions.FirAnnotationCall
 import org.jetbrains.kotlin.fir.expressions.FirBlock
-import org.jetbrains.kotlin.fir.expressions.FirLocalContext
 import org.jetbrains.kotlin.fir.references.FirControlFlowGraphReference
 import org.jetbrains.kotlin.fir.symbols.impl.FirAnonymousFunctionSymbol
 import org.jetbrains.kotlin.fir.types.FirTypeRef
@@ -41,7 +40,6 @@ internal class FirAnonymousFunctionImpl(
     override var label: FirLabel?,
     override var invocationKind: InvocationKind?,
     override val isLambda: Boolean,
-    override var localContext: FirLocalContext,
 ) : FirAnonymousFunction() {
     override var resolvePhase: FirResolvePhase = FirResolvePhase.DECLARATIONS
 
@@ -59,7 +57,6 @@ internal class FirAnonymousFunctionImpl(
         body?.accept(visitor, data)
         typeRef.accept(visitor, data)
         label?.accept(visitor, data)
-        localContext.accept(visitor, data)
     }
 
     override fun <D> transformChildren(transformer: FirTransformer<D>, data: D): FirAnonymousFunctionImpl {
@@ -72,7 +69,6 @@ internal class FirAnonymousFunctionImpl(
         body = body?.transformSingle(transformer, data)
         typeRef = typeRef.transformSingle(transformer, data)
         label = label?.transformSingle(transformer, data)
-        localContext = localContext.transformSingle(transformer, data)
         return this
     }
 
@@ -119,9 +115,5 @@ internal class FirAnonymousFunctionImpl(
 
     override fun replaceInvocationKind(newInvocationKind: InvocationKind?) {
         invocationKind = newInvocationKind
-    }
-
-    override fun replaceLocalContext(newLocalContext: FirLocalContext) {
-        localContext = newLocalContext
     }
 }

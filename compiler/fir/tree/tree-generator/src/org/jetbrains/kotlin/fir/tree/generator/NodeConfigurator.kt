@@ -252,7 +252,6 @@ object NodeConfigurator : AbstractFieldConfigurator<FirTreeBuilder>(FirTreeBuild
                 isMutable = true
             }
             +booleanField("isLambda")
-            +field(localContext, withReplace = true)
         }
 
         typeParameter.configure {

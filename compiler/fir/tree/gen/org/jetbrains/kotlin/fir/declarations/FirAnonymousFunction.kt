@@ -12,7 +12,6 @@ import org.jetbrains.kotlin.fir.FirSourceElement
 import org.jetbrains.kotlin.fir.expressions.FirAnnotationCall
 import org.jetbrains.kotlin.fir.expressions.FirBlock
 import org.jetbrains.kotlin.fir.expressions.FirExpression
-import org.jetbrains.kotlin.fir.expressions.FirLocalContext
 import org.jetbrains.kotlin.fir.references.FirControlFlowGraphReference
 import org.jetbrains.kotlin.fir.symbols.impl.FirAnonymousFunctionSymbol
 import org.jetbrains.kotlin.fir.types.FirTypeRef
@@ -39,13 +38,10 @@ abstract class FirAnonymousFunction : FirFunction<FirAnonymousFunction>, FirExpr
     abstract val label: FirLabel?
     abstract val invocationKind: InvocationKind?
     abstract val isLambda: Boolean
-    abstract val localContext: FirLocalContext
 
     override fun <R, D> accept(visitor: FirVisitor<R, D>, data: D): R = visitor.visitAnonymousFunction(this, data)
 
     abstract fun replaceInvocationKind(newInvocationKind: InvocationKind?)
-
-    abstract fun replaceLocalContext(newLocalContext: FirLocalContext)
 
     abstract override fun <D> transformReturnTypeRef(transformer: FirTransformer<D>, data: D): FirAnonymousFunction
 
