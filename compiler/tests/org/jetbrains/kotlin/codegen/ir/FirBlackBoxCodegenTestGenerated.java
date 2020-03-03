@@ -25068,6 +25068,11 @@ public class FirBlackBoxCodegenTestGenerated extends AbstractFirBlackBoxCodegenT
             runTest("compiler/testData/codegen/box/reified/reifiedTypeArgumentWithIntersectionTypeAsTypeArgument.kt");
         }
 
+        @TestMetadata("reifiedTypeArgumentWithRecursion.kt")
+        public void testReifiedTypeArgumentWithRecursion() throws Exception {
+            runTest("compiler/testData/codegen/box/reified/reifiedTypeArgumentWithRecursion.kt");
+        }
+
         @TestMetadata("safecast.kt")
         public void testSafecast() throws Exception {
             runTest("compiler/testData/codegen/box/reified/safecast.kt");
