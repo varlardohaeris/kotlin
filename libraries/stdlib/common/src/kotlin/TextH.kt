@@ -293,7 +293,7 @@ public inline fun String.toBoolean(): Boolean = this.toBoolean()
 /**
  * Returns `true` if this string is not `null` and it's contents is equal to the word "true", ignoring case, and `false` otherwise.
  */
- @SinceKotlin("1.4")
+@SinceKotlin("1.4")
 public expect fun String?.toBoolean(): Boolean
 
 /**
