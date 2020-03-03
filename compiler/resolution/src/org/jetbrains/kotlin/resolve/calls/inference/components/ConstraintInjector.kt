@@ -109,8 +109,11 @@ class ConstraintInjector(
 //        }
 
         while (possibleNewConstraints.isNotEmpty()) {
-            val (typeVariable, constraint) = possibleNewConstraints.pop()
-            if (c.shouldWeSkipConstraint(typeVariable, constraint)) continue
+            val (typeVariable, constraint) = possibleNewConstraints.peek()
+            if (c.shouldWeSkipConstraint(typeVariable, constraint)) {
+                possibleNewConstraints.pop()
+                continue
+            }
 
             val constraints =
                 c.notFixedTypeVariables[typeVariable.freshTypeConstructor(c)] ?: typeCheckerContext.fixedTypeVariable(typeVariable)
@@ -121,6 +124,7 @@ class ConstraintInjector(
                     constraintIncorporator.incorporate(typeCheckerContext, typeVariable, it)
                 }
             }
+            possibleNewConstraints.pop()
         }
     }
 
