@@ -36,8 +36,8 @@ open class DexMethodCount : DefaultTask() {
         get() = artifactName ?: project.name
 
     fun from(jar: Jar) {
-        jarFile = jar.archivePath
-        artifactName = jar.baseName
+        jarFile = jar.archiveFile.get().asFile
+        artifactName = jar.archiveBaseName.orNull
         dependsOn(jar)
     }
 
@@ -51,10 +51,7 @@ open class DexMethodCount : DefaultTask() {
     @TaskAction
     fun invoke() {
         val methods = dexMethods(jarFile)
-
         val counts = methods.getCounts().also { this.counts = it }
-
-        printTotals(counts)
         outputDetails(counts)
     }
 
@@ -62,7 +59,7 @@ open class DexMethodCount : DefaultTask() {
         val byPackage = this.groupingBy { it.`package` }.eachCount()
         val byClass = this.groupingBy { it.declaringType }.eachCount()
 
-        val ownPackages = ownPackages?.map { it + '.' }
+        val ownPackages = ownPackages?.map { "$it." }
         val byOwnPackages = if (ownPackages != null) {
             this.partition { method -> ownPackages.any { method.declaringType.startsWith(it) } }.let {
                 it.first.size to it.second.size
@@ -76,14 +73,6 @@ open class DexMethodCount : DefaultTask() {
             byPackage = byPackage,
             byClass = byClass
         )
-    }
-
-    private fun printTotals(counts: Counts) {
-        logger.lifecycle("Artifact $artifactOrArchiveName, total methods: ${counts.total}")
-        ownPackages?.let { packages ->
-            logger.lifecycle("Artifact $artifactOrArchiveName, total methods from packages ${packages.joinToString { "$it.*" }}: ${counts.totalOwnPackages}")
-            logger.lifecycle("Artifact $artifactOrArchiveName, total methods from other packages: ${counts.totalOtherPackages}")
-        }
     }
 
     private fun outputDetails(counts: Counts) {
@@ -107,7 +96,7 @@ open class DexMethodCount : DefaultTask() {
     }
 }
 
-open class TCDexMethodCountStats : DefaultTask() {
+open class DexMethodCountStats : DefaultTask() {
 
     @Internal
     lateinit var from: TaskProvider<DexMethodCount>
@@ -117,31 +106,54 @@ open class TCDexMethodCountStats : DefaultTask() {
         get() = from.get().detailOutputFile
 
     @TaskAction
-    private fun printTCStats() {
+    private fun printStats() {
         val artifactOrArchiveName = from.get().artifactOrArchiveName
         inputFile.reader().useLines { lines ->
             fun String.getStatValue() = substringBefore("\t").trim()
 
-            val stats = lines.take(3).toList()
-            val total = stats[0].getStatValue()
-            val totalOwnPackages = stats[1].getStatValue()
-            val totalOtherPackages = stats[2].getStatValue()
+            val ownPackages = from.get().ownPackages
+            val statsLineCount = if (ownPackages == null) 1 else 3
+            val stats = lines.take(statsLineCount).map { it.getStatValue() }.toList()
 
-            println("##teamcity[buildStatisticValue key='DexMethodCount_${artifactOrArchiveName}' value='$total']")
-            println("##teamcity[buildStatisticValue key='DexMethodCount_${artifactOrArchiveName}_OwnPackages' value='$totalOwnPackages']")
-            println("##teamcity[buildStatisticValue key='DexMethodCount_${artifactOrArchiveName}_OtherPackages' value='$totalOtherPackages']")
+            val total = stats[0]
+            if (project.kotlinBuildProperties.isTeamcityBuild) {
+                println("##teamcity[buildStatisticValue key='DexMethodCount_${artifactOrArchiveName}' value='$total']")
+            } else {
+                logger.lifecycle("Artifact $artifactOrArchiveName, total methods: $total")
+            }
+
+            ownPackages?.let { packages ->
+                val totalOwnPackages = stats[1]
+                val totalOtherPackages = stats[2]
+
+                if (project.kotlinBuildProperties.isTeamcityBuild) {
+                    println("##teamcity[buildStatisticValue key='DexMethodCount_${artifactOrArchiveName}_OwnPackages' value='$totalOwnPackages']")
+                    println("##teamcity[buildStatisticValue key='DexMethodCount_${artifactOrArchiveName}_OtherPackages' value='$totalOtherPackages']")
+                } else {
+                    logger.lifecycle("Artifact $artifactOrArchiveName, total methods from packages ${packages.joinToString { "$it.*" }}: $totalOwnPackages")
+                    logger.lifecycle("Artifact $artifactOrArchiveName, total methods from other packages: $totalOtherPackages")
+                }
+            }
         }
     }
 }
 
-fun Project.printTCStats(dexMethodCount: TaskProvider<DexMethodCount>) {
-    val dexMethodCountStats = tasks.register("dexMethodCountStats", TCDexMethodCountStats::class.java) {
+fun Project.printStats(dexMethodCount: TaskProvider<DexMethodCount>) {
+    val dexMethodCountStats = tasks.register("dexMethodCountStats", DexMethodCountStats::class.java) {
+        dependsOn(dexMethodCount)
         from = dexMethodCount
     }
 
     dexMethodCount.configure {
         finalizedBy(dexMethodCountStats)
     }
+}
+
+fun Project.dexMethodCount(action: DexMethodCount.() -> Unit): TaskProvider<DexMethodCount> {
+    val dexMethodCount = tasks.register("dexMethodCount", DexMethodCount::class.java, action)
+    printStats(dexMethodCount)
+    tasks.getByName("check").dependsOn(dexMethodCount)
+    return dexMethodCount
 }
 
 private val DexMethod.`package`: String get() = declaringType.substringBeforeLast('.')

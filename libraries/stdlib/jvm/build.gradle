@@ -106,16 +106,10 @@ artifacts {
 
 javadocJar()
 
-def dexMethodCount = tasks.register("dexMethodCount", DexMethodCount) {
-    from jar
-    ownPackages = ['kotlin']
+DexMethodCountKt.dexMethodCount(project) { task ->
+    task.from(jar)
+    task.ownPackages = ['kotlin']
 }
-
-if (BuildPropertiesKt.getKotlinBuildProperties(project).isTeamcityBuild) {
-    DexMethodCountKt.printTCStats(project, dexMethodCount)
-}
-
-check.dependsOn(dexMethodCount)
 
 compileKotlin {
     kotlinOptions {
