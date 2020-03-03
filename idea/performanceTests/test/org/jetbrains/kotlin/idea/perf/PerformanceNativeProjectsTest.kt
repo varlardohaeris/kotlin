@@ -11,6 +11,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.rootManager
 import com.intellij.openapi.roots.LibraryOrderEntry
 import com.intellij.openapi.roots.OrderRootType
+import com.intellij.openapi.util.SystemInfoRt
 import com.intellij.openapi.util.io.FileUtil
 import org.jetbrains.kotlin.gradle.KotlinSourceSet.Companion.COMMON_TEST_SOURCE_SET_NAME
 import org.jetbrains.kotlin.ide.konan.NativeLibraryKind
@@ -43,12 +44,33 @@ class PerformanceNativeProjectsTest : AbstractPerformanceProjectsTest() {
         private var warmedUp: Boolean = false
     }
 
-    private enum class TestTarget(val alias: String) {
-        IOS("ios"),
-        LINUX("linux"),
-        ANDROID_NATIVE("androidNative");
+    private enum class HostOS {
+        LINUX,
+        WINDOWS,
+        MAC;
 
-        val enabled get() = true
+        companion object {
+            fun current(): HostOS? = when {
+                SystemInfoRt.isWindows -> WINDOWS
+                SystemInfoRt.isMac -> MAC
+                SystemInfoRt.isLinux -> LINUX
+                else -> null
+            }
+        }
+    }
+
+    private enum class TestTarget(val alias: String) {
+        IOS("ios") {
+            override val enabled get() = HostOS.current() == HostOS.MAC
+        },
+        LINUX("linux") {
+            override val enabled get() = HostOS.current() != null
+        },
+        ANDROID_NATIVE("androidNative") {
+            override val enabled get() = HostOS.current() != null
+        };
+
+        abstract val enabled: Boolean
     }
 
     private enum class TestProject(
