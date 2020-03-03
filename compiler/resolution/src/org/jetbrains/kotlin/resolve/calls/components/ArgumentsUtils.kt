@@ -29,9 +29,11 @@ import org.jetbrains.kotlin.resolve.descriptorUtil.isParameterOfAnnotation
 import org.jetbrains.kotlin.resolve.descriptorUtil.module
 import org.jetbrains.kotlin.resolve.multiplatform.ExpectedActualResolver
 import org.jetbrains.kotlin.resolve.scopes.receivers.ReceiverValueWithSmartCastInfo
+import org.jetbrains.kotlin.types.IntersectionTypeConstructor
 import org.jetbrains.kotlin.types.UnwrappedType
 import org.jetbrains.kotlin.types.checker.intersectWrappedTypes
 import org.jetbrains.kotlin.utils.DFS
+import org.jetbrains.kotlin.utils.addToStdlib.cast
 import org.jetbrains.kotlin.utils.addToStdlib.safeAs
 
 internal fun unexpectedArgument(argument: KotlinCallArgument): Nothing =
@@ -48,9 +50,12 @@ internal val ReceiverValueWithSmartCastInfo.unstableType: UnwrappedType?
 val ReceiverValueWithSmartCastInfo.stableType: UnwrappedType
     get() {
         if (!isStable || possibleTypes.isEmpty()) return receiverValue.type.unwrap()
-        return if (isLambdaArgumentReceiver)
-            intersectWrappedTypes(possibleTypes + receiverValue.type, receiverValue.type)
-        else intersectWrappedTypes(possibleTypes + receiverValue.type)
+        val intersectionResult = intersectWrappedTypes(possibleTypes + receiverValue.type)
+
+        return if (isLambdaArgumentReceiver && intersectionResult.constructor is IntersectionTypeConstructor)
+            intersectionResult.constructor.cast<IntersectionTypeConstructor>()
+                .setTypeWithoutSmartCast(receiverValue.type).createType()
+        else intersectionResult
     }
 
 internal fun KotlinCallArgument.getExpectedType(parameter: ParameterDescriptor, languageVersionSettings: LanguageVersionSettings) =

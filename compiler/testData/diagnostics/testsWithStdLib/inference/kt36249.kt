@@ -8,11 +8,11 @@ interface PomRenameableTarget
 interface PsiElement
 interface PsiMethod : PsiElement, PomRenameableTarget
 interface PsiClass : PsiElement, PomRenameableTarget
+
 class A {
-    val inv get() = Inv(select(PsiMethod::class, PsiClass::class))
-}
-fun main() {
-    A().inv
+    val inv get() = select(PsiMethod::class, PsiClass::class)
 }
 
-class Inv<T>(val prop: T)
+fun main() {
+    <!DEBUG_INFO_EXPRESSION_TYPE("PsiElement?")!>A().inv<!>
+}

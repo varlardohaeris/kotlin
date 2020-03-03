@@ -11044,9 +11044,19 @@ public class FirOldFrontendDiagnosticsTestGenerated extends AbstractFirOldFronte
                 runTest("compiler/testData/diagnostics/tests/inference/publicApproximation/approximatedIntersectionMorePreciseThanBound.kt");
             }
 
+            @TestMetadata("chainedLambdas.kt")
+            public void testChainedLambdas() throws Exception {
+                runTest("compiler/testData/diagnostics/tests/inference/publicApproximation/chainedLambdas.kt");
+            }
+
             @TestMetadata("declarationTypes.kt")
             public void testDeclarationTypes() throws Exception {
                 runTest("compiler/testData/diagnostics/tests/inference/publicApproximation/declarationTypes.kt");
+            }
+
+            @TestMetadata("intersectionAfterSmartCastInLambdaReturn.kt")
+            public void testIntersectionAfterSmartCastInLambdaReturn() throws Exception {
+                runTest("compiler/testData/diagnostics/tests/inference/publicApproximation/intersectionAfterSmartCastInLambdaReturn.kt");
             }
 
             @TestMetadata("intersectionAlternative.kt")
@@ -11059,14 +11069,29 @@ public class FirOldFrontendDiagnosticsTestGenerated extends AbstractFirOldFronte
                 runTest("compiler/testData/diagnostics/tests/inference/publicApproximation/intersectionLocations.kt");
             }
 
+            @TestMetadata("lambdaReturnArgumentCall.kt")
+            public void testLambdaReturnArgumentCall() throws Exception {
+                runTest("compiler/testData/diagnostics/tests/inference/publicApproximation/lambdaReturnArgumentCall.kt");
+            }
+
             @TestMetadata("lambdaReturnTypeApproximation.kt")
             public void testLambdaReturnTypeApproximation() throws Exception {
                 runTest("compiler/testData/diagnostics/tests/inference/publicApproximation/lambdaReturnTypeApproximation.kt");
             }
 
+            @TestMetadata("nonTrivialVariance.kt")
+            public void testNonTrivialVariance() throws Exception {
+                runTest("compiler/testData/diagnostics/tests/inference/publicApproximation/nonTrivialVariance.kt");
+            }
+
             @TestMetadata("parameterInBound.kt")
             public void testParameterInBound() throws Exception {
                 runTest("compiler/testData/diagnostics/tests/inference/publicApproximation/parameterInBound.kt");
+            }
+
+            @TestMetadata("projections.kt")
+            public void testProjections() throws Exception {
+                runTest("compiler/testData/diagnostics/tests/inference/publicApproximation/projections.kt");
             }
         }
 

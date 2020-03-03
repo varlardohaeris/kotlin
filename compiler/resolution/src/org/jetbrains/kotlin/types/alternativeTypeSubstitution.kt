@@ -5,45 +5,28 @@
 
 package org.jetbrains.kotlin.types
 
+import org.jetbrains.kotlin.resolve.calls.inference.components.NewTypeSubstitutor
 import org.jetbrains.kotlin.types.typeUtil.contains
 
 fun substituteAlternativesInPublicType(type: KotlinType): UnwrappedType {
-    if (!type.contains { it.constructor is IntersectionTypeConstructor })
-        return type.unwrap()
+    val substitutor = object : NewTypeSubstitutor {
+        override fun substituteNotNullTypeWithConstructor(constructor: TypeConstructor): UnwrappedType? {
+            if (constructor is IntersectionTypeConstructor) {
+                constructor.getTypeWithoutSmartCast()?.let { withoutLastSmartCast ->
+                    return safeSubstitute(withoutLastSmartCast.unwrap())
+                }
+                constructor.getAlternativeType()?.let { alternative ->
+                    return safeSubstitute(alternative.unwrap())
+                }
+            }
 
-    return doReplace(type.unwrap())
-}
-
-private fun doReplace(type: UnwrappedType): UnwrappedType {
-    if (type is ErrorType) return type
-
-    val constructor = type.constructor
-    if (constructor is IntersectionTypeConstructor) {
-        constructor.getTypeWithoutSmartCast()?.let { withoutLastSmartCast ->
-            return doReplace(withoutLastSmartCast.unwrap())
-                .inheritEnhancement(type)
+            return null
         }
-        constructor.getAlternativeType()?.let { alternative ->
-            return doReplace(alternative.unwrap())
-                .inheritEnhancement(type)
+
+        override val isEmpty: Boolean by lazy {
+            !type.contains { it.constructor is IntersectionTypeConstructor }
         }
     }
 
-    return when (val unwrappedType = type.unwrap()) {
-        is SimpleType -> unwrappedType.updateArguments().inheritEnhancement(type)
-        is FlexibleType -> KotlinTypeFactory.flexibleType(
-            unwrappedType.lowerBound.updateArguments(),
-            unwrappedType.upperBound.updateArguments(),
-        ).inheritEnhancement(type)
-    }
-}
-
-private fun SimpleType.updateArguments(): SimpleType {
-    return replace(arguments.map { replaceProjection(it) })
-}
-
-private fun replaceProjection(projection: TypeProjection): TypeProjection {
-    if (projection.isStarProjection) return projection
-
-    return TypeProjectionImpl(projection.projectionKind, doReplace(projection.type.unwrap()))
+    return substitutor.safeSubstitute(type.unwrap())
 }

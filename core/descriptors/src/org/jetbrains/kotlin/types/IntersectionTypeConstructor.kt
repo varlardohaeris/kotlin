@@ -24,6 +24,7 @@ import org.jetbrains.kotlin.resolve.scopes.MemberScope
 import org.jetbrains.kotlin.resolve.scopes.TypeIntersectionScope
 import org.jetbrains.kotlin.types.checker.KotlinTypeRefiner
 import org.jetbrains.kotlin.types.refinement.TypeRefinement
+import org.jetbrains.kotlin.utils.addToStdlib.safeAs
 import java.util.*
 
 class IntersectionTypeConstructor(typesToIntersect: Collection<KotlinType>) : TypeConstructor {
@@ -87,7 +88,7 @@ class IntersectionTypeConstructor(typesToIntersect: Collection<KotlinType>) : Ty
 
     @TypeRefinement
     override fun refine(kotlinTypeRefiner: KotlinTypeRefiner) =
-        IntersectionTypeConstructor(intersectedTypes.map { it.refine(kotlinTypeRefiner) })
+        transformComponents { it.refine(kotlinTypeRefiner) } ?: this
 
     fun setAlternative(alternative: KotlinType?): IntersectionTypeConstructor {
         return IntersectionTypeConstructor(intersectedTypes, alternative, withoutSmartCast)
@@ -101,7 +102,7 @@ class IntersectionTypeConstructor(typesToIntersect: Collection<KotlinType>) : Ty
     fun getTypeWithoutSmartCast(): KotlinType? = withoutSmartCast
 }
 
-inline fun IntersectionTypeConstructor.transformComponents(
+fun IntersectionTypeConstructor.transformComponents(
     predicate: (KotlinType) -> Boolean = { true },
     transform: (KotlinType) -> KotlinType
 ): IntersectionTypeConstructor? {
@@ -118,4 +119,17 @@ inline fun IntersectionTypeConstructor.transformComponents(
     if (!changed) return null
 
     return IntersectionTypeConstructor(newSupertypes)
+        .setAlternative(getAlternativeType()?.updateIntersectionAlternative(predicate, transform))
+        .setTypeWithoutSmartCast(getTypeWithoutSmartCast()?.updateIntersectionAlternative(predicate, transform))
+}
+
+private fun KotlinType.updateIntersectionAlternative(
+    predicate: (KotlinType) -> Boolean,
+    transform: (KotlinType) -> KotlinType,
+): KotlinType? {
+    constructor.safeAs<IntersectionTypeConstructor>()?.let { alternativeIntersection ->
+        return (alternativeIntersection.transformComponents(predicate, transform) ?: alternativeIntersection).createType()
+    }
+
+    return if (predicate(this)) transform(this) else this
 }

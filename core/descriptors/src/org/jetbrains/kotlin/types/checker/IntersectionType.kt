@@ -22,14 +22,13 @@ import java.util.*
 import kotlin.collections.LinkedHashSet
 
 fun intersectWrappedTypes(
-    types: Collection<KotlinType>,
-    alternativeWithoutSmartCasts: KotlinType? = null,
-) = intersectTypes(types.map { it.unwrap() }, alternativeWithoutSmartCasts)
+    types: Collection<KotlinType>
+) = intersectTypes(types.map { it.unwrap() })
 
 
 fun intersectTypes(types: List<SimpleType>) = intersectTypes(types as List<UnwrappedType>) as SimpleType
 
-fun intersectTypes(types: List<UnwrappedType>, alternativeWithoutSmartCasts: KotlinType? = null): UnwrappedType {
+fun intersectTypes(types: List<UnwrappedType>): UnwrappedType {
     when (types.size) {
         0 -> error("Expected some types")
         1 -> return types.single()
@@ -53,7 +52,7 @@ fun intersectTypes(types: List<UnwrappedType>, alternativeWithoutSmartCasts: Kot
     }
 
     if (!hasFlexibleTypes) {
-        return TypeIntersector.intersectTypes(lowerBounds, alternativeWithoutSmartCasts)
+        return TypeIntersector.intersectTypes(lowerBounds)
     }
 
     val upperBounds = types.map { it.upperIfFlexible() }
@@ -65,15 +64,36 @@ fun intersectTypes(types: List<UnwrappedType>, alternativeWithoutSmartCasts: Kot
      *  Note: when we construct intersection type of dynamic(or Raw type) & other type, we can get non-dynamic type.  // todo discuss
      */
     return KotlinTypeFactory.flexibleType(
-        TypeIntersector.intersectTypes(lowerBounds, alternativeWithoutSmartCasts),
-        TypeIntersector.intersectTypes(upperBounds, alternativeWithoutSmartCasts)
+        TypeIntersector.intersectTypes(lowerBounds),
+        TypeIntersector.intersectTypes(upperBounds)
     )
 }
 
 
 object TypeIntersector {
 
-    internal fun intersectTypes(types: List<SimpleType>, alternativeWithoutSmartCasts: KotlinType?): SimpleType {
+    // nullability here is correct
+    private fun intersectTypesWithoutIntersectionType(inputTypes: Set<SimpleType>): SimpleType {
+        if (inputTypes.size == 1) return inputTypes.single()
+
+        // Any and Nothing should leave
+        // Note that duplicates should be dropped because we have Set here.
+        val errorMessage = { "This collections cannot be empty! input types: ${inputTypes.joinToString()}" }
+
+        val filteredEqualTypes = filterTypes(inputTypes, ::isStrictSupertype)
+        assert(filteredEqualTypes.isNotEmpty(), errorMessage)
+
+        IntegerLiteralTypeConstructor.findIntersectionType(filteredEqualTypes)?.let { return it }
+
+        val filteredSuperAndEqualTypes = filterTypes(filteredEqualTypes, NewKotlinTypeChecker.Default::equalTypes)
+        assert(filteredSuperAndEqualTypes.isNotEmpty(), errorMessage)
+
+        if (filteredSuperAndEqualTypes.size < 2) return filteredSuperAndEqualTypes.single()
+
+        return IntersectionTypeConstructor(inputTypes).createType()
+    }
+
+    internal fun intersectTypes(types: List<SimpleType>): SimpleType {
         assert(types.size > 1) {
             "Size should be at least 2, but it is ${types.size}"
         }
@@ -103,28 +123,7 @@ object TypeIntersector {
             if (resultNullability == ResultNullability.NOT_NULL) it.makeSimpleTypeDefinitelyNotNullOrNotNull() else it
         }
 
-        return intersectTypesWithoutIntersectionType(correctNullability, alternativeWithoutSmartCasts)
-    }
-
-    // nullability here is correct
-    private fun intersectTypesWithoutIntersectionType(inputTypes: Set<SimpleType>, alternativeWithoutSmartCasts: KotlinType?): SimpleType {
-        if (inputTypes.size == 1) return inputTypes.single()
-
-        // Any and Nothing should leave
-        // Note that duplicates should be dropped because we have Set here.
-        val errorMessage = { "This collections cannot be empty! input types: ${inputTypes.joinToString()}" }
-
-        val filteredEqualTypes = filterTypes(inputTypes, ::isStrictSupertype)
-        assert(filteredEqualTypes.isNotEmpty(), errorMessage)
-
-        IntegerLiteralTypeConstructor.findIntersectionType(filteredEqualTypes)?.let { return it }
-
-        val filteredSuperAndEqualTypes = filterTypes(filteredEqualTypes, NewKotlinTypeChecker.Default::equalTypes)
-        assert(filteredSuperAndEqualTypes.isNotEmpty(), errorMessage)
-
-        if (filteredSuperAndEqualTypes.size < 2) return filteredSuperAndEqualTypes.single()
-
-        return IntersectionTypeConstructor(inputTypes).setTypeWithoutSmartCast(alternativeWithoutSmartCasts).createType()
+        return intersectTypesWithoutIntersectionType(correctNullability)
     }
 
     private fun filterTypes(
