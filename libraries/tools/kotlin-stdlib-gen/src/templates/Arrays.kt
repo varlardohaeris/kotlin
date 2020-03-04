@@ -123,7 +123,6 @@ object ArrayOps : TemplateGroupBase() {
         receiver("SELF?")
         returns("Boolean")
         if (family == ArraysOfUnsigned) {
-            inlineOnly()
             body { "return this?.storage.contentEquals(other?.storage)" }
             return@builder
         }
@@ -248,7 +247,6 @@ object ArrayOps : TemplateGroupBase() {
         receiver("SELF?")
         returns("String")
         if (family == ArraysOfUnsigned) {
-            inlineOnly()
             body { """return this?.joinToString(", ", "[", "]") ?: "null"""" }
             return@builder
         }
@@ -341,7 +339,6 @@ object ArrayOps : TemplateGroupBase() {
         receiver("SELF?")
         returns("Int")
         if (family == ArraysOfUnsigned) {
-            inlineOnly()
             body { "return this?.storage.contentHashCode()" }
             return@builder
         }

@@ -3060,8 +3060,7 @@ public infix fun UShortArray.contentEquals(other: UShortArray): Boolean {
  */
 @SinceKotlin("1.4")
 @ExperimentalUnsignedTypes
-@kotlin.internal.InlineOnly
-public inline infix fun UIntArray?.contentEquals(other: UIntArray?): Boolean {
+public infix fun UIntArray?.contentEquals(other: UIntArray?): Boolean {
     return this?.storage.contentEquals(other?.storage)
 }
 
@@ -3071,8 +3070,7 @@ public inline infix fun UIntArray?.contentEquals(other: UIntArray?): Boolean {
  */
 @SinceKotlin("1.4")
 @ExperimentalUnsignedTypes
-@kotlin.internal.InlineOnly
-public inline infix fun ULongArray?.contentEquals(other: ULongArray?): Boolean {
+public infix fun ULongArray?.contentEquals(other: ULongArray?): Boolean {
     return this?.storage.contentEquals(other?.storage)
 }
 
@@ -3082,8 +3080,7 @@ public inline infix fun ULongArray?.contentEquals(other: ULongArray?): Boolean {
  */
 @SinceKotlin("1.4")
 @ExperimentalUnsignedTypes
-@kotlin.internal.InlineOnly
-public inline infix fun UByteArray?.contentEquals(other: UByteArray?): Boolean {
+public infix fun UByteArray?.contentEquals(other: UByteArray?): Boolean {
     return this?.storage.contentEquals(other?.storage)
 }
 
@@ -3093,8 +3090,7 @@ public inline infix fun UByteArray?.contentEquals(other: UByteArray?): Boolean {
  */
 @SinceKotlin("1.4")
 @ExperimentalUnsignedTypes
-@kotlin.internal.InlineOnly
-public inline infix fun UShortArray?.contentEquals(other: UShortArray?): Boolean {
+public infix fun UShortArray?.contentEquals(other: UShortArray?): Boolean {
     return this?.storage.contentEquals(other?.storage)
 }
 
@@ -3143,8 +3139,7 @@ public fun UShortArray.contentHashCode(): Int {
  */
 @SinceKotlin("1.4")
 @ExperimentalUnsignedTypes
-@kotlin.internal.InlineOnly
-public inline fun UIntArray?.contentHashCode(): Int {
+public fun UIntArray?.contentHashCode(): Int {
     return this?.storage.contentHashCode()
 }
 
@@ -3153,8 +3148,7 @@ public inline fun UIntArray?.contentHashCode(): Int {
  */
 @SinceKotlin("1.4")
 @ExperimentalUnsignedTypes
-@kotlin.internal.InlineOnly
-public inline fun ULongArray?.contentHashCode(): Int {
+public fun ULongArray?.contentHashCode(): Int {
     return this?.storage.contentHashCode()
 }
 
@@ -3163,8 +3157,7 @@ public inline fun ULongArray?.contentHashCode(): Int {
  */
 @SinceKotlin("1.4")
 @ExperimentalUnsignedTypes
-@kotlin.internal.InlineOnly
-public inline fun UByteArray?.contentHashCode(): Int {
+public fun UByteArray?.contentHashCode(): Int {
     return this?.storage.contentHashCode()
 }
 
@@ -3173,8 +3166,7 @@ public inline fun UByteArray?.contentHashCode(): Int {
  */
 @SinceKotlin("1.4")
 @ExperimentalUnsignedTypes
-@kotlin.internal.InlineOnly
-public inline fun UShortArray?.contentHashCode(): Int {
+public fun UShortArray?.contentHashCode(): Int {
     return this?.storage.contentHashCode()
 }
 
@@ -3233,8 +3225,7 @@ public fun UShortArray.contentToString(): String {
  */
 @SinceKotlin("1.4")
 @ExperimentalUnsignedTypes
-@kotlin.internal.InlineOnly
-public inline fun UIntArray?.contentToString(): String {
+public fun UIntArray?.contentToString(): String {
     return this?.joinToString(", ", "[", "]") ?: "null"
 }
 
@@ -3245,8 +3236,7 @@ public inline fun UIntArray?.contentToString(): String {
  */
 @SinceKotlin("1.4")
 @ExperimentalUnsignedTypes
-@kotlin.internal.InlineOnly
-public inline fun ULongArray?.contentToString(): String {
+public fun ULongArray?.contentToString(): String {
     return this?.joinToString(", ", "[", "]") ?: "null"
 }
 
@@ -3257,8 +3247,7 @@ public inline fun ULongArray?.contentToString(): String {
  */
 @SinceKotlin("1.4")
 @ExperimentalUnsignedTypes
-@kotlin.internal.InlineOnly
-public inline fun UByteArray?.contentToString(): String {
+public fun UByteArray?.contentToString(): String {
     return this?.joinToString(", ", "[", "]") ?: "null"
 }
 
@@ -3269,8 +3258,7 @@ public inline fun UByteArray?.contentToString(): String {
  */
 @SinceKotlin("1.4")
 @ExperimentalUnsignedTypes
-@kotlin.internal.InlineOnly
-public inline fun UShortArray?.contentToString(): String {
+public fun UShortArray?.contentToString(): String {
     return this?.joinToString(", ", "[", "]") ?: "null"
 }
 
