@@ -11093,6 +11093,16 @@ public class FirOldFrontendDiagnosticsTestGenerated extends AbstractFirOldFronte
             public void testProjections() throws Exception {
                 runTest("compiler/testData/diagnostics/tests/inference/publicApproximation/projections.kt");
             }
+
+            @TestMetadata("smartCastInLambdaReturnAfterIntersection.kt")
+            public void testSmartCastInLambdaReturnAfterIntersection() throws Exception {
+                runTest("compiler/testData/diagnostics/tests/inference/publicApproximation/smartCastInLambdaReturnAfterIntersection.kt");
+            }
+
+            @TestMetadata("twoIntersections.kt")
+            public void testTwoIntersections() throws Exception {
+                runTest("compiler/testData/diagnostics/tests/inference/publicApproximation/twoIntersections.kt");
+            }
         }
 
         @TestMetadata("compiler/testData/diagnostics/tests/inference/recursiveCalls")

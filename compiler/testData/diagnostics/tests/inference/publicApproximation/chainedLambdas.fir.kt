@@ -1,6 +1,10 @@
 // !DIAGNOSTICS: -UNUSED_PARAMETER
+// !WITH_NEW_INFERENCE
+// NI_EXPECTED_FILE
 
-interface First
+interface First {
+    fun first() {}
+}
 interface Second
 interface Third
 interface Fourth
@@ -25,6 +29,6 @@ fun chained2(arg: First) = run {
 }
 
 fun test(arg: First) {
-    chained1(arg)
-    chained2(arg)
+    chained1(arg).first()
+    chained2(arg).first()
 }

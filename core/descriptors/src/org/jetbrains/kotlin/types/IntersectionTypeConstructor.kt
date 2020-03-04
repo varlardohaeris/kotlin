@@ -29,15 +29,12 @@ import java.util.*
 
 class IntersectionTypeConstructor(typesToIntersect: Collection<KotlinType>) : TypeConstructor {
     private var alternative: KotlinType? = null
-    private var withoutSmartCast: KotlinType? = null
 
     private constructor(
         typesToIntersect: Collection<KotlinType>,
         alternative: KotlinType?,
-        withoutSmartCast: KotlinType?,
     ) : this(typesToIntersect) {
         this.alternative = alternative
-        this.withoutSmartCast = withoutSmartCast
     }
 
     init {
@@ -91,15 +88,10 @@ class IntersectionTypeConstructor(typesToIntersect: Collection<KotlinType>) : Ty
         transformComponents { it.refine(kotlinTypeRefiner) } ?: this
 
     fun setAlternative(alternative: KotlinType?): IntersectionTypeConstructor {
-        return IntersectionTypeConstructor(intersectedTypes, alternative, withoutSmartCast)
-    }
-
-    fun setTypeWithoutSmartCast(withoutSmartCast: KotlinType?): IntersectionTypeConstructor {
-        return IntersectionTypeConstructor(intersectedTypes, alternative, withoutSmartCast)
+        return IntersectionTypeConstructor(intersectedTypes, alternative)
     }
 
     fun getAlternativeType(): KotlinType? = alternative
-    fun getTypeWithoutSmartCast(): KotlinType? = withoutSmartCast
 }
 
 fun IntersectionTypeConstructor.transformComponents(
@@ -120,7 +112,6 @@ fun IntersectionTypeConstructor.transformComponents(
 
     return IntersectionTypeConstructor(newSupertypes)
         .setAlternative(getAlternativeType()?.updateIntersectionAlternative(predicate, transform))
-        .setTypeWithoutSmartCast(getTypeWithoutSmartCast()?.updateIntersectionAlternative(predicate, transform))
 }
 
 private fun KotlinType.updateIntersectionAlternative(

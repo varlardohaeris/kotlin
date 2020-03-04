@@ -305,7 +305,6 @@ internal fun createSimplePSICallArgument(
     contextForArgument.languageVersionSettings,
     contextForArgument.dataFlowValueFactory,
     contextForArgument.call,
-    isLambdaReturnArgument = false,
 )
 
 internal fun createSimplePSICallArgument(
@@ -318,7 +317,6 @@ internal fun createSimplePSICallArgument(
     languageVersionSettings: LanguageVersionSettings,
     dataFlowValueFactory: DataFlowValueFactory,
     call: Call,
-    isLambdaReturnArgument: Boolean,
 ): SimplePSIKotlinCallArgument? {
 
     val ktExpression = KtPsiUtil.getLastElementDeparenthesized(valueArgument.getArgumentExpression(), statementFilter) ?: return null
@@ -342,7 +340,6 @@ internal fun createSimplePSICallArgument(
                 expressionReceiver,
                 languageVersionSettings,
                 dataFlowValueFactory,
-                isLambdaReturnArgument
             )
         }
 

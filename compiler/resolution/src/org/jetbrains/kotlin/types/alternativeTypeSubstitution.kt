@@ -12,9 +12,6 @@ fun substituteAlternativesInPublicType(type: KotlinType): UnwrappedType {
     val substitutor = object : NewTypeSubstitutor {
         override fun substituteNotNullTypeWithConstructor(constructor: TypeConstructor): UnwrappedType? {
             if (constructor is IntersectionTypeConstructor) {
-                constructor.getTypeWithoutSmartCast()?.let { withoutLastSmartCast ->
-                    return safeSubstitute(withoutLastSmartCast.unwrap())
-                }
                 constructor.getAlternativeType()?.let { alternative ->
                     return safeSubstitute(alternative.unwrap())
                 }

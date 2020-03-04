@@ -577,14 +577,12 @@ fun transformToReceiverWithSmartCastInfo(
     receiver: ReceiverValue,
     languageVersionSettings: LanguageVersionSettings,
     dataFlowValueFactory: DataFlowValueFactory,
-    isLambdaArgumentReceiver: Boolean = false,
 ): ReceiverValueWithSmartCastInfo {
     val dataFlowValue = dataFlowValueFactory.createDataFlowValue(receiver, bindingContext, containingDescriptor)
     return ReceiverValueWithSmartCastInfo(
         receiver,
         dataFlowInfo.getCollectedTypes(dataFlowValue, languageVersionSettings),
         dataFlowValue.isStable,
-        isLambdaArgumentReceiver,
     )
 }
 

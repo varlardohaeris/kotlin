@@ -28,8 +28,7 @@ interface DetailedReceiver
 class ReceiverValueWithSmartCastInfo(
     val receiverValue: ReceiverValue,
     val possibleTypes: Set<KotlinType>, // doesn't include receiver.type
-    val isStable: Boolean,
-    val isLambdaArgumentReceiver: Boolean = false,
+    val isStable: Boolean
 ) : DetailedReceiver {
     override fun toString() = receiverValue.toString()
 }
@@ -55,5 +54,5 @@ fun ReceiverValueWithSmartCastInfo.prepareReceiverRegardingCaptureTypes(): Recei
     }
     val newReceiver = if (preparedBaseType != null) receiverValue.replaceType(preparedBaseType) else receiverValue
 
-    return ReceiverValueWithSmartCastInfo(newReceiver, newPossibleTypes, isStable, isLambdaArgumentReceiver)
+    return ReceiverValueWithSmartCastInfo(newReceiver, newPossibleTypes, isStable)
 }
