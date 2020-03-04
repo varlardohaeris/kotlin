@@ -508,8 +508,9 @@ class FirExpressionsResolveTransformer(transformer: FirBodyResolveTransformer) :
             ConeClassLikeTypeImpl(symbol.toLookupTag(), emptyArray(), isNullable = kind == FirConstKind.Null)
         } else {
             val integerLiteralType = ConeIntegerLiteralTypeImpl(constExpression.value as Long)
-            val expectedType = data.expectedType?.coneTypeSafe<ConeKotlinType>()
-            if (expectedType != null) {
+            val expectedTypeRef = data.expectedType
+            if (expectedTypeRef != null) {
+                val expectedType = expectedTypeRef.coneTypeSafe<ConeKotlinType>()
                 val approximatedType = integerLiteralType.getApproximatedType(expectedType)
                 val newConstKind = approximatedType.toConstKind()
                 if (newConstKind == null) {
@@ -517,7 +518,7 @@ class FirExpressionsResolveTransformer(transformer: FirBodyResolveTransformer) :
                     dataFlowAnalyzer.exitConstExpresion(constExpression as FirConstExpression<*>)
                     constExpression.resultType = buildErrorTypeRef {
                         source = constExpression.source
-                        diagnostic = FirTypeMismatchError(expectedType, integerLiteralType.getApproximatedType())
+                        diagnostic = FirTypeMismatchError(expectedType!!, integerLiteralType.getApproximatedType())
                     }
                     return constExpression.compose()
                 }
