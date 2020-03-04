@@ -10,13 +10,14 @@ import org.jetbrains.kotlin.fir.diagnostics.FirDiagnostic
 import org.jetbrains.kotlin.fir.expressions.builder.buildConstExpression
 import org.jetbrains.kotlin.fir.expressions.builder.buildErrorExpression
 import org.jetbrains.kotlin.fir.expressions.builder.buildErrorLoop
-import org.jetbrains.kotlin.fir.expressions.impl.FirConstExpressionImpl
-import org.jetbrains.kotlin.fir.expressions.impl.FirErrorExpressionImpl
-import org.jetbrains.kotlin.fir.expressions.impl.FirErrorLoopImpl
+import org.jetbrains.kotlin.fir.expressions.impl.*
+import org.jetbrains.kotlin.fir.expressions.impl.FirBlockImpl
 import org.jetbrains.kotlin.fir.references.FirResolvedNamedReference
 import org.jetbrains.kotlin.fir.symbols.impl.FirCallableSymbol
 import org.jetbrains.kotlin.fir.types.ConeClassLikeType
 import org.jetbrains.kotlin.fir.types.FirResolvedTypeRef
+import org.jetbrains.kotlin.fir.visitors.FirTransformer
+import org.jetbrains.kotlin.fir.visitors.transformInplace
 import org.jetbrains.kotlin.name.ClassId
 
 inline val FirAnnotationCall.coneClassLikeType: ConeClassLikeType?
@@ -55,4 +56,12 @@ fun buildErrorExpression(source: FirSourceElement?, diagnostic: FirDiagnostic): 
         this.source = source
         this.diagnostic = diagnostic
     }
+}
+
+fun <D> FirBlock.transformStatementsIndexed(transformer: FirTransformer<D>, dataProducer: (Int) -> D): FirBlock {
+    when (this) {
+        is FirBlockImpl -> statements.transformInplace(transformer, dataProducer)
+        is FirSingleExpressionBlock -> transformStatements(transformer, dataProducer(0))
+    }
+    return this
 }

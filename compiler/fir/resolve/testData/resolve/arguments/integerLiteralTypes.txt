@@ -11,7 +11,7 @@ FILE: integerLiteralTypes.kt
     }
     public final fun test_0(): R|kotlin/Unit| {
         Long(1)
-        Int(1)
+        IntegerLiteral(1)
         Long(10000000000)
     }
     public final fun test_1(): R|kotlin/Unit| {
